@@ -19,14 +19,20 @@
  */
 
 using System;
+using GenericRoguelike.Models;
+//using Views;
+//using Controllers;
 
 namespace GenericRoguelike
 {
+
 	class MainClass
 	{
 		public static void Main (string[] args)
 		{
-			Console.WriteLine ("Hello World!");
+			World game_world = new World ();
+			Console.WriteLine ("The name of the world is " + game_world.Name());
+			Console.WriteLine ("Hello "+game_world.Name()+"!");
 		}
 	}
 }
