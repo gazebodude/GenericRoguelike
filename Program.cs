@@ -30,9 +30,22 @@ namespace GenericRoguelike
 	{
 		public static void Main (string[] args)
 		{
-			World game_world = new World ();
+			World game_world = new World (20, 30);
 			Console.WriteLine ("The name of the world is " + game_world.Name());
+			Console.WriteLine ("It has a width of {0} and height of {1}", game_world.Width (), game_world.Height ());
 			Console.WriteLine ("Hello "+game_world.Name()+"!");
+
+			try {
+				LocalObject player = new LocalObject (game_world, new Location (0, 0));
+				Console.WriteLine ("Player location: "+ player.Location());
+				if (game_world.HasLocation(player.Location())) {
+					Console.WriteLine ("Player is within the game world.");
+				} else {
+					Console.WriteLine ("Player is outside the game world!");
+				}
+			} catch (ArgumentOutOfRangeException e) {
+				Console.WriteLine (e);
+			}
 		}
 	}
 }
