@@ -30,12 +30,61 @@ namespace GenericRoguelike
 	{
 
 		[Test ()]
-		public void TestWorldName ()
+		public void TestWorldConstructor ()
 		{
 			World w = new World (20, 30);
 
 			Assert.Contains (w.Name (), World.WorldNames);
+			Assert.AreEqual (20, w.Width());
+			Assert.AreEqual (30, w.Height());
+
+			World w2 = new World ();
+
+			Assert.Contains (w2.Name (), World.WorldNames);
+			Assert.AreEqual (40, w2.Width());
+			Assert.AreEqual (40, w2.Height());
 		}
+
+		[Test ()]
+		public void TestLocation ()
+		{
+			Location loc = new Location (5, 7);
+
+			Assert.AreEqual (5, loc.x);
+			Assert.AreEqual (7, loc.y);
+			Assert.AreEqual ("(5,7)",loc.ToString());
+
+			Location loc2 = new Location ();
+
+			Assert.AreEqual (0, loc2.x);
+			Assert.AreEqual (0, loc2.y);
+			Assert.AreEqual ("(0,0)", loc2.ToString());
+		}
+
+		[Test ()]
+		public void TestWorldHasLocation ()
+		{
+			World w = new World (20, 30);
+			Location middle_location = new Location (5, 7);
+			Location origin_location = new Location ();
+			Location bottom_right_corner_location = new Location ((int)w.Width() - 1, (int)w.Height () - 1);
+			Location outside_bottom_right_corner_location = new Location (20,30);
+			Location outside_top_left_corner_location = new Location (-1, -1);
+
+			Assert.IsTrue (w.HasLocation (middle_location));
+			Assert.IsTrue (w.HasLocation (origin_location));
+			Assert.IsTrue (w.HasLocation (bottom_right_corner_location));
+			Assert.IsFalse (w.HasLocation (outside_bottom_right_corner_location));
+			Assert.IsFalse (w.HasLocation (outside_top_left_corner_location));
+		}
+
+		[Test ()]
+		public void TestWorldRegisterLocalObject()
+		{
+			// TODO: code out stub; test currently fails
+			Assert.Fail ("TestWorldRegisterLocalObject not implemented yet!");
+		}
+
 	}
 }
 

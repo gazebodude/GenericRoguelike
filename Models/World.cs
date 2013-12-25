@@ -19,11 +19,17 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Collections.Generic;
 
 namespace GenericRoguelike.Models
 {
+	/// <summary>
+	/// Location represents a location within the game world.
+	/// Just a basic wrapper for (x,y) values.
+	/// </summary>
 	public struct Location {
 		public int x,y;
+
 		public Location(int x, int y) {
 			this.x = x;
 			this.y = y;
@@ -32,12 +38,21 @@ namespace GenericRoguelike.Models
 			return "("+this.x+","+this.y+")";
 		}
 	}
+
+	/// <summary>
+	/// Local object represents an object with a location within the
+	/// game world. Has references to the world and its location within it.
+	/// </summary>
 	public class LocalObject {
 		private World world;
 		private Location loc;
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GenericRoguelike.Models.LocalObject"/> class.
+		/// </summary>
+		/// <param name="w">The containing World instance.</param>
+		/// <param name="l">The Location of the LocalObject within the world.</param>
+		/// <exception cref="ArgumentOutOfRangeException">If the location l is outside of the world w throws ArgumentOutOfRange exception.</exception>
 		public LocalObject(World w, Location l) {
-			/// If the location l is outside of the world w throws ArgumentOutOfRange exception
 			this.world = w;
 			this.loc = l;
 			if (!w.HasLocation (l))
@@ -45,33 +60,72 @@ namespace GenericRoguelike.Models
 					"Location passed to LocalObject(World w, Location l) which is outside of specified world!");
 		}
 
+		/// <summary>
+		/// Return the containing World of this instance.
+		/// </summary>
 		public World World() {
 			return world;
 		}
+		/// <summary>
+		/// Location of this instance.
+		/// </summary>
 		public Location Location() {
 			return loc;
 		}
 	}
 
+	/// <summary>
+	/// An instance of World represents the game world and contains references to
+	/// all localisable game objects within it.
+	/// </summary>
 	public class World
 	{
 		private string _name;
 		private uint _width, _height;
+
 		public static string[] WorldNames = new string[] {"Endaril","Westmar","Vanaheim","Hof"};
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GenericRoguelike.Models.World"/> class.
+		/// Defaults to a size of 40x40.
+		/// </summary>
+		public World()
+		{
+			/// Default size is 40x40
+			_NewRandomName ();
+			this._width = 40;
+			this._height = 40;
+		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GenericRoguelike.Models.World"/> class.
+		/// </summary>
+		/// <param name="w">The width.</param>
+		/// <param name="h">The height.</param>
 		public World (uint w, uint h)
 		{
-			Random rand = new Random ();
-			this._name = WorldNames [rand.Next (WorldNames.Length)];
+			_NewRandomName ();
 			this._width = w;
 			this._height = h;
 		}
-
+		/// <summary>
+		/// Name of this instance.
+		/// </summary>
 		public string Name() {
 			return _name;
 		}
+		/// <summary>
+		/// Width of this instance.
+		/// </summary>
 		public uint Width() { return _width; }
+		/// <summary>
+		/// Height of this instance.
+		/// </summary>
 		public uint Height() { return _height; }
+		/// <summary>
+		/// Determines whether this instance has a given location.
+		/// </summary>
+		/// <returns><c>true</c> if this instance has location the specified loc; otherwise, <c>false</c>.</returns>
+		/// <param name="loc">Location.</param>
 		public bool HasLocation(Location loc) {
 			if (loc.x >= 0 && loc.x < _width && loc.y >= 0 && loc.y < _height) {
 				return true;
@@ -79,7 +133,15 @@ namespace GenericRoguelike.Models
 				return false;
 			}
 		}
-
+		
+		/// <summary>
+		/// Generate a new random world name chosen randomly from the list Models.WorldNames
+		/// </summary>
+		private void _NewRandomName ()
+		{
+			Random rand = new Random ();
+			this._name = WorldNames [rand.Next (WorldNames.Length)];
+		}
 	}
 }
 
