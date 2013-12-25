@@ -1,2 +1,4 @@
 # Ignore builds
 bin/*
+# Ignore NUnit test result files
+TestResult.xml
