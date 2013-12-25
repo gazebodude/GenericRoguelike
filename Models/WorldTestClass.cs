@@ -83,6 +83,20 @@ namespace GenericRoguelike
 		{
 			// TODO: code out stub; test currently fails
 			Assert.Fail ("TestWorldRegisterLocalObject not implemented yet!");
+
+			// What I would like to work:
+			// World w = new World();
+			// LocalObject obj = new LocalObject(w, new Location());
+			// obj.IsRegistered() <-- returns False
+			// obj.Key() <-- returns null
+			// w.RegisterLocalObject("new thingy", obj); <-- raises exception if loc out of bounds, key collision or obj already registered
+			// obj.IsRegistered() <-- returns true
+			// obj.Key() <-- returns "new thingy"
+			// w.HasLocalObject("new thingy") <-- returns true
+			// w.GetLocalObject("new thingy") <-- returns obj
+			// w.GetLocalObjectsByLocation(new Location()) <-- returns list with obj in it
+			// w.GetLocalObjects() <-- returns list with obj in it
+			// ^^^ Maybe implement a collection interface?
 		}
 
 	}
