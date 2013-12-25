@@ -82,6 +82,7 @@ namespace GenericRoguelike.Models
 	{
 		private string _name;
 		private uint _width, _height;
+		private Dictionary<string,LocalObject> _game_objects = new Dictionary<string, LocalObject>();
 
 		public static string[] WorldNames = new string[] {"Endaril","Westmar","Vanaheim","Hof"};
 
@@ -132,6 +133,43 @@ namespace GenericRoguelike.Models
 			} else {
 				return false;
 			}
+		}
+
+		// TODO: Decide if this is the right way to implement object registration!
+		/// <summary>
+		/// Registers a local object in the World instance.
+		/// </summary>
+		/// <param name="key">The reference key of the LocalObject.</param>
+		/// <param name="o">The LocalObject to be registered in the World instance.</param>
+		/// <exception cref="ArgumentException">If World o.World() is not the same as this world instance.</exception>
+		/// <exception cref="ArgumentException">If the key string clashes with an already registered one of this world instance.</exception>
+		/// <exception cref="ArgumentOutOfRange">If the location o.Location() is outside of the world this
+		/// throws ArgumentOutOfRange exception.</exception>
+		public void RegisterLocalObject(string key, LocalObject o) {
+			if (o.World () == this) {
+				if (this.HasLocation (o.Location ())) {
+					if (!_game_objects.ContainsKey (key)) {
+						_game_objects.Add (key, o);
+					} else {
+						throw new ArgumentException ("Cannot register more than one object with the same key!", "string key");
+					}
+				} else {
+					throw new ArgumentOutOfRangeException ("LocalObject o",
+						"Location of object passed to RegisterLocalObject is outside of specified world!");
+
+				}
+			} else {
+				throw new ArgumentException ("Cannot register an object to a different world!", "LocalObject o");
+			}
+		}
+
+		/// <summary>
+		/// Return a dictionary of game objects.
+		/// </summary>
+		/// <returns>The objects as a dictionary of registered (string key, LocalObject value) pairs.</returns>
+		public Dictionary<string,LocalObject> GameObjects()
+		{
+			return _game_objects;
 		}
 		
 		/// <summary>
