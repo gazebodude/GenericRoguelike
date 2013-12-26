@@ -46,6 +46,8 @@ namespace GenericRoguelike.Models
 	public class LocalObject {
 		private World world;
 		private Location loc;
+		private bool is_registered;
+		private string key;
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GenericRoguelike.Models.LocalObject"/> class.
 		/// </summary>
@@ -55,6 +57,8 @@ namespace GenericRoguelike.Models
 		public LocalObject(World w, Location l) {
 			this.world = w;
 			this.loc = l;
+			this.is_registered = false;
+			this.key = null;
 			if (!w.HasLocation (l))
 				throw new ArgumentOutOfRangeException ("Location l",
 					"Location passed to LocalObject(World w, Location l) which is outside of specified world!");
@@ -71,6 +75,20 @@ namespace GenericRoguelike.Models
 		/// </summary>
 		public Location Location() {
 			return loc;
+		}
+
+		public bool IsRegistered ()
+		{
+			return is_registered;
+		}
+		public void Register(string k)
+		{
+			this.is_registered = true;
+			this.key = k;
+		}
+		public string Key ()
+		{
+			return key;
 		}
 	}
 
@@ -150,6 +168,7 @@ namespace GenericRoguelike.Models
 				if (this.HasLocation (o.Location ())) {
 					if (!_game_objects.ContainsKey (key)) {
 						_game_objects.Add (key, o);
+						o.Register (key);
 					} else {
 						throw new ArgumentException ("Cannot register more than one object with the same key!", "string key");
 					}
@@ -170,6 +189,19 @@ namespace GenericRoguelike.Models
 		public Dictionary<string,LocalObject> GameObjects()
 		{
 			return _game_objects;
+		}
+
+		public bool HasLocalObject (string key)
+		{
+			return _game_objects.ContainsKey(key);
+		}
+
+		public object GetLocalObject (string key)
+		{
+			if (!HasLocalObject (key)) {
+				throw new ArgumentException ("World does not have a LocalObject with the given key!", "string key");
+			}
+			return _game_objects [key];
 		}
 		
 		/// <summary>

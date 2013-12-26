@@ -79,23 +79,28 @@ namespace GenericRoguelike
 		}
 
 		[Test ()]
+		public void TestLocalObjectConstructor()
+		{
+			World w = new World();
+			LocalObject obj = new LocalObject(w, new Location());
+
+			Assert.IsFalse (obj.IsRegistered ());
+			Assert.IsNull (obj.Key ());
+		}
+
+		[Test ()]
 		public void TestWorldRegisterLocalObject()
 		{
-			// TODO: code out stub; test currently fails
-			Assert.Fail ("TestWorldRegisterLocalObject not implemented yet!");
+			World w = new World();
+			LocalObject obj = new LocalObject(w, new Location());
 
-			// What I would like to work:
-			// World w = new World();
-			// LocalObject obj = new LocalObject(w, new Location());
-			// obj.IsRegistered() <-- returns False
-			// obj.Key() <-- returns null
-			// w.RegisterLocalObject("new thingy", obj); <-- raises exception if loc out of bounds, key collision or obj already registered
-			// obj.IsRegistered() <-- returns true
-			// obj.Key() <-- returns "new thingy"
-			// w.HasLocalObject("new thingy") <-- returns true
-			// w.GetLocalObject("new thingy") <-- returns obj
-			// w.GetLocalObjectsByLocation(new Location()) <-- returns list with obj in it
-			// w.GetLocalObjects() <-- returns list with obj in it
+			w.RegisterLocalObject("new thingy", obj); //<-- raises exception if loc out of bounds, key collision or obj already registered
+			Assert.IsTrue (obj.IsRegistered ());
+			Assert.AreEqual ("new thingy", obj.Key ());
+			Assert.IsTrue (w.HasLocalObject ("new thingy"));
+			Assert.AreSame (obj, w.GetLocalObject ("new thingy"));
+			// w.GetLocalObjectsByLocation(new Location()) //<-- returns list with obj in it
+			// w.GetLocalObjects() //<-- returns list with obj in it
 			// ^^^ Maybe implement a collection interface?
 		}
 
