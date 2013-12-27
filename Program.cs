@@ -20,7 +20,7 @@
 
 using System;
 using GenericRoguelike.Models;
-//using Views;
+using GenericRoguelike.Views;
 //using Controllers;
 
 namespace GenericRoguelike
@@ -31,6 +31,8 @@ namespace GenericRoguelike
 		public static void Main (string[] args)
 		{
 			World game_world = new World (20, 30);
+			ConsoleViewer view = new ConsoleViewer (game_world);
+
 			Console.WriteLine ("The name of the world is " + game_world.Name());
 			Console.WriteLine ("It has a width of {0} and height of {1}", game_world.Width (), game_world.Height ());
 			Console.WriteLine ("Hello "+game_world.Name()+"!");
@@ -46,6 +48,10 @@ namespace GenericRoguelike
 			} catch (ArgumentOutOfRangeException e) {
 				Console.WriteLine (e);
 			}
+			Console.WriteLine ("Press enter to continue...");
+			Console.ReadLine ();
+			view.Update (0,0);
+			Console.ReadLine ();
 		}
 	}
 }
