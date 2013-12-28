@@ -27,12 +27,42 @@ namespace GenericRoguelike.Models
 	/// Location represents a location within the game world.
 	/// Just a basic wrapper for (x,y) values.
 	/// </summary>
-	public struct Location {
+	public struct Location : IEquatable<Location>{
 		public int x,y;
 
 		public Location(int x, int y) {
 			this.x = x;
 			this.y = y;
+		}
+		public Location Right() {
+			return new Location(this.x+1,this.y);
+		}
+		public Location Left() {
+			return new Location(this.x-1,this.y);
+		}
+		public Location Up() {
+			return new Location(this.x, this.y-1);
+		}
+		public Location Down() {
+			return new Location(this.x, this.y+1);
+		}
+		public override bool Equals(object o) {
+			if (o is Location) {
+				return this.Equals ((Location)o);
+			}
+			return false;
+		}
+		public bool Equals(Location l) {
+			return (this.x==l.x)&&(this.y==l.y);
+		}
+		public static bool operator ==(Location l1, Location l2) {
+			return l1.Equals(l2);
+		}
+		public static bool operator !=(Location l1, Location l2) {
+			return !l1.Equals(l2);
+		}
+		public override int GetHashCode() {
+			return this.x ^ this.y;
 		}
 		public override string ToString() {
 			return "("+this.x+","+this.y+")";
@@ -75,6 +105,9 @@ namespace GenericRoguelike.Models
 		/// </summary>
 		public Location Location() {
 			return loc;
+		}
+		public void Move(Location new_loc) {
+			this.loc = new_loc;
 		}
 
 		public bool IsRegistered ()
@@ -159,26 +192,31 @@ namespace GenericRoguelike.Models
 		/// </summary>
 		/// <param name="key">The reference key of the LocalObject.</param>
 		/// <param name="o">The LocalObject to be registered in the World instance.</param>
+		/// <exception cref="ArgumentException">If object already registered.</exception>
 		/// <exception cref="ArgumentException">If World o.World() is not the same as this world instance.</exception>
 		/// <exception cref="ArgumentException">If the key string clashes with an already registered one of this world instance.</exception>
 		/// <exception cref="ArgumentOutOfRange">If the location o.Location() is outside of the world this
 		/// throws ArgumentOutOfRange exception.</exception>
 		public void RegisterLocalObject(string key, LocalObject o) {
-			if (o.World () == this) {
-				if (this.HasLocation (o.Location ())) {
-					if (!_game_objects.ContainsKey (key)) {
-						_game_objects.Add (key, o);
-						o.Register (key);
+			if (!o.IsRegistered ()) {
+				if (o.World () == this) {
+					if (this.HasLocation (o.Location ())) {
+						if (!_game_objects.ContainsKey (key)) {
+							_game_objects.Add (key, o);
+							o.Register (key);
+						} else {
+							throw new ArgumentException ("Cannot register more than one object with the same key!", "string key");
+						}
 					} else {
-						throw new ArgumentException ("Cannot register more than one object with the same key!", "string key");
+						throw new ArgumentOutOfRangeException ("LocalObject o",
+							"Location of object passed to RegisterLocalObject is outside of specified world!");
+				
 					}
 				} else {
-					throw new ArgumentOutOfRangeException ("LocalObject o",
-						"Location of object passed to RegisterLocalObject is outside of specified world!");
-
+					throw new ArgumentException ("Cannot register an object to a different world!", "LocalObject o");
 				}
 			} else {
-				throw new ArgumentException ("Cannot register an object to a different world!", "LocalObject o");
+				throw new ArgumentException ("LocalObject already registered in call to RegisterLocalObject");
 			}
 		}
 
@@ -202,6 +240,22 @@ namespace GenericRoguelike.Models
 				throw new ArgumentException ("World does not have a LocalObject with the given key!", "string key");
 			}
 			return _game_objects [key];
+		}
+
+		public System.Collections.ICollection GetLocalObjects ()
+		{
+			return this._game_objects.Values;
+		}
+
+		public List<LocalObject> GetLocalObjectsByLocation (Location location)
+		{
+			List<LocalObject> objects = new List<LocalObject>();
+			foreach(LocalObject obj in this._game_objects.Values) {
+				if (obj.Location() == location) {
+					objects.Add(obj);
+				}
+			}
+			return objects;
 		}
 		
 		/// <summary>

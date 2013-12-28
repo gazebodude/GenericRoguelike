@@ -19,6 +19,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace GenericRoguelike
@@ -59,6 +60,9 @@ namespace GenericRoguelike
 			Assert.AreEqual (0, loc2.x);
 			Assert.AreEqual (0, loc2.y);
 			Assert.AreEqual ("(0,0)", loc2.ToString());
+
+			Assert.IsFalse (loc == loc2);
+			Assert.IsTrue (loc2 == new Location ());
 		}
 
 		[Test ()]
@@ -94,14 +98,64 @@ namespace GenericRoguelike
 			World w = new World();
 			LocalObject obj = new LocalObject(w, new Location());
 
-			w.RegisterLocalObject("new thingy", obj); //<-- raises exception if loc out of bounds, key collision or obj already registered
+			w.RegisterLocalObject("new thingy", obj);
 			Assert.IsTrue (obj.IsRegistered ());
 			Assert.AreEqual ("new thingy", obj.Key ());
 			Assert.IsTrue (w.HasLocalObject ("new thingy"));
 			Assert.AreSame (obj, w.GetLocalObject ("new thingy"));
-			// w.GetLocalObjectsByLocation(new Location()) //<-- returns list with obj in it
-			// w.GetLocalObjects() //<-- returns list with obj in it
+			Assert.IsFalse (w.HasLocalObject ("should not exist"));
+			try {
+				w.GetLocalObject("should not exist");
+				Assert.Fail("GetLocalObject returns object with non-existent key");
+			} catch (ArgumentException e) {
+				Assert.IsTrue (e.Message.Contains ("World does not have a LocalObject with the given key!"));
+			}
+			List<LocalObject> objects_at_origin = w.GetLocalObjectsByLocation (new Location ()); //<-- returns list with obj in it
+			List<LocalObject> objects_at_11 = w.GetLocalObjectsByLocation (new Location (1, 1));
+			Assert.AreEqual (1, objects_at_origin.Count);
+			Assert.Contains (obj, objects_at_origin);
+			Assert.AreEqual (0, objects_at_11.Count);
+			Assert.Contains (obj, w.GetLocalObjects ());
 			// ^^^ Maybe implement a collection interface?
+		}
+
+		[Test ()]
+		public void TestWorldRegisterLocalObjectExceptions()
+		{
+			World w = new World ();
+			World w2 = new World ();
+			LocalObject wrong_world_obj = new LocalObject (w2, new Location ());
+			LocalObject out_of_bounds_obj = new LocalObject (w, new Location ());
+			out_of_bounds_obj.Move (new Location (-1, -1));
+			LocalObject double_registration_obj = new LocalObject (w, new Location ());
+			LocalObject key_collision_obj = new LocalObject (w, new Location ());
+
+			try {
+				w.RegisterLocalObject("wrong world object", wrong_world_obj);
+				// If it gets here then test fails
+				Assert.Fail("Wrong world object registers");
+			} catch (ArgumentException e) {
+				Assert.IsTrue (e.Message.Contains("Cannot register an object to a different world!"));
+			}
+			try {
+				w.RegisterLocalObject("out of bounds object", out_of_bounds_obj);
+				Assert.Fail("Out of bounds object registers");
+			} catch (ArgumentOutOfRangeException e) {
+				Assert.IsTrue (e.Message.Contains("Location of object passed to RegisterLocalObject is outside of specified world!"));
+			}
+			w.RegisterLocalObject ("double registration object", double_registration_obj);
+			try {
+				w.RegisterLocalObject("try double registering", double_registration_obj);
+				Assert.Fail("Object registers twice");
+			} catch (ArgumentException e) {
+				Assert.IsTrue (e.Message.Contains("LocalObject already registered in call to RegisterLocalObject"));
+			}
+			try {
+				w.RegisterLocalObject("double registration object", key_collision_obj);
+				Assert.Fail("Registered two objects with the same key");
+			} catch (ArgumentException e) {
+				Assert.IsTrue (e.Message.Contains ("Cannot register more than one object with the same key!"));
+			}
 		}
 
 	}
