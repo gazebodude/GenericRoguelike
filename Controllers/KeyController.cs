@@ -44,7 +44,11 @@ namespace GenericRoguelike.Controllers
 
 		public void RegisterCallback(ConsoleKey k, Handler h)
 		{
-			this._handlers.Add (k, h);
+			if (!this._handlers.ContainsKey (k)) {
+				this._handlers.Add (k, h);
+			} else {
+				this._handlers [k] += h;
+			}
 		}
 
 		public void RunOnce()

@@ -58,7 +58,7 @@ namespace GenericRoguelike.Views
 		/// </summary>
 		/// <param name="x">The x coordinate.</param>
 		/// <param name="y">The y coordinate.</param>
-		public void Update(int x, int y) {
+		public void Update(int x, int y, int turn_counter) {
 			this.ClearBuffer ();
 			if (!this._world.HasLocation (new Location (x, y))) {
 				throw new ArgumentOutOfRangeException ("(x,y)", "Cannot draw a location outside of the world!");
@@ -92,8 +92,8 @@ namespace GenericRoguelike.Views
 			_i = 2;
 			_j = this._height - 3;
 			try {
-				msg = this._world.GetLocalObject("player").ToString() +
-				      " Location: " + this._world.GetLocalObject("player").Location().ToString();
+				var player = this._world.GetLocalObject ("player");
+				msg = "Turn: " + turn_counter + " Stats: " + player + " Location: " + player.Location().ToString();
 				for (int k=0; k < msg.Length; k++) {
 					this.DrawChar(msg[k],_i++,_j);
 				}
@@ -110,6 +110,13 @@ namespace GenericRoguelike.Views
 			}
 			Console.Clear ();
 			Console.Write (sb.ToString());
+		}
+
+		public void DeathScreen (Player player, int turns)
+		{
+			Console.Clear ();
+			Console.WriteLine ("You died on turn {0}!", turns);
+			Console.WriteLine ("Stats: "+player);
 		}
 
 		private void ClearBuffer ()

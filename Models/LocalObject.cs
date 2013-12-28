@@ -116,21 +116,30 @@ namespace GenericRoguelike.Models
 	}
 
 	public abstract class Agent:Destructible {
+		public int attack_strength { get; set; }
 		public abstract void TakeAction(string message);
+
 		public Agent(World w, Location l):base(w,l) {
 
 		}
 	}
 
 	public class Player:Agent {
+		private static Random rand;
 		private static bool player_exists;
+
+		static Player() {
+			rand = new Random();
+		}
 
 		public Player(World w, Location start):base(w,start) {
 			if (player_exists) {
 				throw new InvalidOperationException ("Cannot create more than one Player object!");
 			}
 			player_exists = true;
+			this.attack_strength = 10;
 		}
+
 		public override void TakeAction(string message) {
 			if (message.StartsWith("MOVE_")) {
 				Location loc = this.Location();
@@ -149,8 +158,26 @@ namespace GenericRoguelike.Models
 					break;
 				}
 				if(this.World().HasLocation(loc)) {
-					this.Move(loc);
+					var objs_at_dest = this.World ().GetLocalObjectsByLocation (loc);
+					if (objs_at_dest.Count > 0) {
+						LocalObject target = objs_at_dest [0];
+						if ((target is Destructible) && ((Destructible)target).isAlive()) {
+							this.Attack ((Destructible)target);
+							Console.Write ("Attack!");
+						}
+					} else {
+						this.Move(loc);
+					}
 				}
+			}
+		}
+
+		public void Attack (Destructible target) {
+			int damage = (int)((double)this.attack_strength * rand.NextDouble ());
+			target.takeDamage (damage);
+			if ((target is Agent) && target.isAlive()) {
+				int counter_damage = (int)((double)((Agent)target).attack_strength * rand.NextDouble ());
+				this.takeDamage (counter_damage);
 			}
 		}
 		public override string ToString ()
@@ -159,6 +186,72 @@ namespace GenericRoguelike.Models
 		}
 		public override char Char() {
 			return 'p';
+		}
+	}
+	public class Mouse:Agent
+	{
+		private static Random rand;
+		static Mouse() {
+			rand = new Random();
+		}
+		public Mouse(World w, Location l):base(w,l) {
+			this.health = 10;
+			this.attack_strength = 2;
+		}
+		public override void TakeAction (string message)
+		{
+			if (!this.isAlive ()) {
+				return;
+			}
+			Location loc = this.Location();
+			switch (rand.Next (10)) {
+			case 0:
+				loc = this.Location ().Up ();
+				break;
+			case 1:
+				loc = this.Location ().Down ();
+				break;
+			case 2:
+				loc = this.Location ().Right ();
+				break;
+			case 3:
+				loc = this.Location ().Left ();
+				break;
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+			case 10:
+				break; // no move
+			}
+			if(this.World().HasLocation(loc)) {
+				this.Move(loc);
+			}
+		}
+		public override char Char ()
+		{
+			return (this.isAlive())?'m':'*';
+		}
+		public override string ToString ()
+		{
+			return string.Format ("[Mouse] Health: {0} Location: {1}", this.health, this.Location());
+		}
+	}
+	public class BigMouse:Mouse
+	{
+		public BigMouse(World w, Location l):base(w,l) {
+			this.health = 80;
+			this.attack_strength = 15;
+		}
+		public override char Char ()
+		{
+			return (this.isAlive())?'M':'*';
+		}
+		public override string ToString ()
+		{
+			return string.Format ("[BigMouse] Health: {0} Location: {1}", this.health, this.Location());
 		}
 	}
 }
