@@ -30,19 +30,22 @@ namespace GenericRoguelike.Views
 		private int _width;
 		private int _height;
 		private World _world;
+		private char[,] _buffer;
 
 		public ConsoleViewer (World w)
 		{
 			this._width = Console.WindowWidth;
-			this._height = Console.WindowHeight;
+			this._height = Console.WindowHeight-1;
 			this._world = w;
+			this._buffer = new char[this._width, this._height];
 		}
 
 		private void DrawChar(char c, int x, int y)
 		{
 			try {
-				Console.SetCursorPosition(x,y);
-				Console.Write(c);
+//				Console.SetCursorPosition(x,y);
+//				Console.Write(c);
+				this._buffer[x,y]=c;
 			} catch (ArgumentOutOfRangeException e) {
 				// go quietly...
 			}
@@ -54,7 +57,6 @@ namespace GenericRoguelike.Views
 		/// <param name="x">The x coordinate.</param>
 		/// <param name="y">The y coordinate.</param>
 		public void Update(int x, int y) {
-			Console.Clear ();
 			if (!this._world.HasLocation (new Location (x, y))) {
 				throw new ArgumentOutOfRangeException ("(x,y)", "Cannot draw a location outside of the world!");
 			}
@@ -77,12 +79,19 @@ namespace GenericRoguelike.Views
 				}
 			}
 			int _i = this._width / 2 - 10;
-			int _j = this._height - 2;
-			string msg = "Press enter to quit...";
+			int _j = this._height - 1;
+			string msg = "Press ESC to quit...";
 			for (int k=0; k < msg.Length; k++) {
 				this.DrawChar(msg[k],_i++,_j);
 			}
-
+			System.Text.StringBuilder sb = new System.Text.StringBuilder ();
+			for (int i = 0; i < this._height; i++) {
+				for (int j = 0; j < this._width; j++) {
+					sb.Append (this._buffer [j, i]);
+				}
+			}
+			Console.Clear ();
+			Console.Write (sb.ToString());
 		}
 	}
 }
