@@ -21,13 +21,15 @@
 using System;
 using GenericRoguelike.Models;
 using GenericRoguelike.Views;
-//using Controllers;
+using GenericRoguelike.Controllers;
 
 namespace GenericRoguelike
 {
 
 	class MainClass
 	{
+		private static bool quitting;
+
 		public static void Main (string[] args)
 		{
 			World game_world = new World (60, 20);
@@ -37,22 +39,31 @@ namespace GenericRoguelike
 			Console.WriteLine ("It has a width of {0} and height of {1}", game_world.Width (), game_world.Height ());
 			Console.WriteLine ("Hello "+game_world.Name()+"!");
 
-			try {
-				Player player = new Player (game_world, new Location (0, 0));
-				game_world.RegisterLocalObject("player",player);
-				Console.WriteLine ("Player location: "+ player.Location());
-				if (game_world.HasLocation(player.Location())) {
-					Console.WriteLine ("Player is within the game world.");
-				} else {
-					Console.WriteLine ("Player is outside the game world!");
-				}
-			} catch (ArgumentOutOfRangeException e) {
-				Console.WriteLine (e);
-			}
+			Player player = new Player (game_world, new Location (0, 0));
+			game_world.RegisterLocalObject("player",player);
+
+			KeyController controller = new KeyController ();
+			KeyController.Handler player_action_handler = new KeyController.Handler (player.TakeAction);
+			KeyController.Handler quit_handler = new KeyController.Handler (Quit);
+			controller.RegisterCallback (KeyController.KEY_MOVE_UP, player_action_handler);
+			controller.RegisterCallback (KeyController.KEY_MOVE_DOWN, player_action_handler);
+			controller.RegisterCallback (KeyController.KEY_MOVE_LEFT, player_action_handler);
+			controller.RegisterCallback (KeyController.KEY_MOVE_RIGHT, player_action_handler);
+			controller.RegisterCallback (KeyController.KEY_QUIT, quit_handler);
 			Console.WriteLine ("Press enter to continue...");
 			Console.ReadLine ();
-			view.Update (0,0);
-			Console.ReadLine ();
+
+			quitting = false;
+			while (!quitting) {
+				view.Update (0,0);
+				controller.RunOnce ();
+			}
+
+		}
+
+		public static void Quit (string message)
+		{
+			quitting = true;
 		}
 	}
 }

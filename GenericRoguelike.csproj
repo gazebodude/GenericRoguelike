@@ -58,6 +58,7 @@
     </Compile>
     <Compile Include="Views\ConsoleViewer.cs" />
     <Compile Include="Models\LocalObject.cs" />
+    <Compile Include="Controllers\KeyController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

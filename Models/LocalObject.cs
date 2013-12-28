@@ -116,7 +116,7 @@ namespace GenericRoguelike.Models
 	}
 
 	public abstract class Agent:Destructible {
-		public abstract void TakeAction();
+		public abstract void TakeAction(string message);
 		public Agent(World w, Location l):base(w,l) {
 
 		}
@@ -131,8 +131,27 @@ namespace GenericRoguelike.Models
 			}
 			player_exists = true;
 		}
-		public override void TakeAction() {
-			throw new NotImplementedException ();
+		public override void TakeAction(string message) {
+			if (message.StartsWith("MOVE_")) {
+				Location loc = this.Location();
+				switch (message) {
+				case "MOVE_UP":
+					loc = this.Location ().Up ();
+					break;
+				case "MOVE_DOWN":
+					loc = this.Location ().Down ();
+					break;
+				case "MOVE_RIGHT":
+					loc = this.Location ().Right ();
+					break;
+				case "MOVE_LEFT":
+					loc = this.Location ().Left ();
+					break;
+				}
+				if(this.World().HasLocation(loc)) {
+					this.Move(loc);
+				}
+			}
 		}
 		public override string ToString ()
 		{
