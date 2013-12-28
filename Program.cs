@@ -30,7 +30,7 @@ namespace GenericRoguelike
 	{
 		public static void Main (string[] args)
 		{
-			World game_world = new World (20, 30);
+			World game_world = new World (60, 20);
 			ConsoleViewer view = new ConsoleViewer (game_world);
 
 			Console.WriteLine ("The name of the world is " + game_world.Name());
@@ -38,7 +38,8 @@ namespace GenericRoguelike
 			Console.WriteLine ("Hello "+game_world.Name()+"!");
 
 			try {
-				LocalObject player = new LocalObject (game_world, new Location (0, 0));
+				Player player = new Player (game_world, new Location (0, 0));
+				game_world.RegisterLocalObject("player",player);
 				Console.WriteLine ("Player location: "+ player.Location());
 				if (game_world.HasLocation(player.Location())) {
 					Console.WriteLine ("Player is within the game world.");

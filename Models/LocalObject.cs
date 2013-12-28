@@ -81,6 +81,13 @@ namespace GenericRoguelike.Models
 		{
 			return key;
 		}
+		/// <summary>
+		/// Character representation of this instance.
+		/// </summary>
+		public virtual char Char()
+		{
+			return ' ';
+		}
 	}
 
 	public class Destructible:LocalObject
@@ -126,6 +133,13 @@ namespace GenericRoguelike.Models
 		}
 		public override void TakeAction() {
 			throw new NotImplementedException ();
+		}
+		public override string ToString ()
+		{
+			return String.Format ("Health: {0}", this.health);
+		}
+		public override char Char() {
+			return 'p';
 		}
 	}
 }

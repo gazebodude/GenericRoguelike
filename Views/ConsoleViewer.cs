@@ -19,6 +19,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Collections.Generic;
 using GenericRoguelike;
 using GenericRoguelike.Models;
 
@@ -61,11 +62,22 @@ namespace GenericRoguelike.Views
 			// here is where we would draw the world, but we still need some logic in the World class:
 			for (int i = 0; i < this._width; i++) {
 				for (int j = 0; j < this._height; j++) {
-					this.DrawChar ('.', i, j);
+					Location loc = new Location (x + i, y + j);
+					if (!this._world.HasLocation (loc)) {
+						continue;
+					}
+					List<LocalObject> objs = this._world.GetLocalObjectsByLocation (loc);
+					if (objs.Count == 0) {
+						this.DrawChar ('.', i, j);
+					} else {
+						foreach (LocalObject o in objs) {
+							this.DrawChar (o.Char (), i, j);
+						}
+					}
 				}
 			}
 			int _i = this._width / 2 - 10;
-			int _j = this._height / 2;
+			int _j = this._height - 2;
 			string msg = "Press enter to quit...";
 			for (int k=0; k < msg.Length; k++) {
 				this.DrawChar(msg[k],_i++,_j);
