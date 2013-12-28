@@ -69,61 +69,6 @@ namespace GenericRoguelike.Models
 		}
 	}
 
-	/// <summary>
-	/// Local object represents an object with a location within the
-	/// game world. Has references to the world and its location within it.
-	/// </summary>
-	public class LocalObject {
-		private World world;
-		private Location loc;
-		private bool is_registered;
-		private string key;
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GenericRoguelike.Models.LocalObject"/> class.
-		/// </summary>
-		/// <param name="w">The containing World instance.</param>
-		/// <param name="l">The Location of the LocalObject within the world.</param>
-		/// <exception cref="ArgumentOutOfRangeException">If the location l is outside of the world w throws ArgumentOutOfRange exception.</exception>
-		public LocalObject(World w, Location l) {
-			this.world = w;
-			this.loc = l;
-			this.is_registered = false;
-			this.key = null;
-			if (!w.HasLocation (l))
-				throw new ArgumentOutOfRangeException ("Location l",
-					"Location passed to LocalObject(World w, Location l) which is outside of specified world!");
-		}
-
-		/// <summary>
-		/// Return the containing World of this instance.
-		/// </summary>
-		public World World() {
-			return world;
-		}
-		/// <summary>
-		/// Location of this instance.
-		/// </summary>
-		public Location Location() {
-			return loc;
-		}
-		public void Move(Location new_loc) {
-			this.loc = new_loc;
-		}
-
-		public bool IsRegistered ()
-		{
-			return is_registered;
-		}
-		public void Register(string k)
-		{
-			this.is_registered = true;
-			this.key = k;
-		}
-		public string Key ()
-		{
-			return key;
-		}
-	}
 
 	/// <summary>
 	/// An instance of World represents the game world and contains references to
