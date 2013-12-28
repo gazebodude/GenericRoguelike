@@ -55,7 +55,7 @@ namespace GenericRoguelike
 
 			quitting = false;
 			while (!quitting) {
-				view.Update (0,0);
+				view.Update (System.Math.Max(0,player.Location().x-10),System.Math.Max(0,player.Location().y-10));
 				controller.RunOnce ();
 			}
 

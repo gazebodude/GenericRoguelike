@@ -179,7 +179,7 @@ namespace GenericRoguelike.Models
 			return _game_objects.ContainsKey(key);
 		}
 
-		public object GetLocalObject (string key)
+		public LocalObject GetLocalObject (string key)
 		{
 			if (!HasLocalObject (key)) {
 				throw new ArgumentException ("World does not have a LocalObject with the given key!", "string key");

@@ -31,6 +31,8 @@ namespace GenericRoguelike.Views
 		private int _height;
 		private World _world;
 		private char[,] _buffer;
+		private int _map_width;
+		private int _map_height;
 
 		public ConsoleViewer (World w)
 		{
@@ -38,13 +40,13 @@ namespace GenericRoguelike.Views
 			this._height = Console.WindowHeight-1;
 			this._world = w;
 			this._buffer = new char[this._width, this._height];
+			this._map_width = this._width * 2 / 3;
+			this._map_height = this._height - 5;
 		}
 
 		private void DrawChar(char c, int x, int y)
 		{
 			try {
-//				Console.SetCursorPosition(x,y);
-//				Console.Write(c);
 				this._buffer[x,y]=c;
 			} catch (ArgumentOutOfRangeException e) {
 				// go quietly...
@@ -57,15 +59,17 @@ namespace GenericRoguelike.Views
 		/// <param name="x">The x coordinate.</param>
 		/// <param name="y">The y coordinate.</param>
 		public void Update(int x, int y) {
+			this.ClearBuffer ();
 			if (!this._world.HasLocation (new Location (x, y))) {
 				throw new ArgumentOutOfRangeException ("(x,y)", "Cannot draw a location outside of the world!");
 			}
 
-			// here is where we would draw the world, but we still need some logic in the World class:
-			for (int i = 0; i < this._width; i++) {
-				for (int j = 0; j < this._height; j++) {
+			// draw map:
+			for (int i = 0; i < this._map_width; i++) {
+				for (int j = 0; j < this._map_height; j++) {
 					Location loc = new Location (x + i, y + j);
 					if (!this._world.HasLocation (loc)) {
+						this.DrawChar('x',i,j);
 						continue;
 					}
 					List<LocalObject> objs = this._world.GetLocalObjectsByLocation (loc);
@@ -78,12 +82,26 @@ namespace GenericRoguelike.Views
 					}
 				}
 			}
+			// draw messages:
 			int _i = this._width / 2 - 10;
 			int _j = this._height - 1;
 			string msg = "Press ESC to quit...";
 			for (int k=0; k < msg.Length; k++) {
 				this.DrawChar(msg[k],_i++,_j);
 			}
+			_i = 2;
+			_j = this._height - 3;
+			try {
+				msg = this._world.GetLocalObject("player").ToString() +
+				      " Location: " + this._world.GetLocalObject("player").Location().ToString();
+				for (int k=0; k < msg.Length; k++) {
+					this.DrawChar(msg[k],_i++,_j);
+				}
+			} catch (ArgumentException e) {
+				// pass
+			}
+
+			// compose and draw buffer:
 			System.Text.StringBuilder sb = new System.Text.StringBuilder ();
 			for (int i = 0; i < this._height; i++) {
 				for (int j = 0; j < this._width; j++) {
@@ -92,6 +110,15 @@ namespace GenericRoguelike.Views
 			}
 			Console.Clear ();
 			Console.Write (sb.ToString());
+		}
+
+		private void ClearBuffer ()
+		{
+			for (int i = 0; i < this._height; i++) {
+				for (int j = 0; j < this._width; j++) {
+					this._buffer [j,i] = ' ';
+				}
+			}
 		}
 	}
 }
