@@ -52,6 +52,12 @@ namespace GenericRoguelike.Models
 			}
 			return false;
 		}
+
+		public int DistanceTo (Location other)
+		{
+			return System.Math.Abs (this.x - other.x) + System.Math.Abs (this.y - other.y);
+		}
+
 		public bool Equals(Location l) {
 			return (this.x==l.x)&&(this.y==l.y);
 		}

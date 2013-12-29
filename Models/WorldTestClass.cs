@@ -63,6 +63,9 @@ namespace GenericRoguelike
 
 			Assert.IsFalse (loc == loc2);
 			Assert.IsTrue (loc2 == new Location ());
+
+			Assert.AreEqual (12, loc.DistanceTo (loc2));
+			Assert.AreEqual (12, loc2.DistanceTo (loc));
 		}
 
 		[Test ()]
