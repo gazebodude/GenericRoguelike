@@ -140,6 +140,10 @@ namespace GenericRoguelike.Views
 			Console.Clear ();
 			Console.WriteLine ("You died on turn {0}!", turns);
 			Console.WriteLine ("Stats: "+player);
+			Console.WriteLine ("{0} kills:", player.Kills().Count);
+			foreach (Agent sod in player.Kills ()) {
+				Console.WriteLine (sod.ToString ());
+			}
 			Console.WriteLine ("Press enter to continue...");
 			Console.ReadLine ();
 		}

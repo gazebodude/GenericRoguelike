@@ -128,6 +128,7 @@ namespace GenericRoguelike.Models
 	public class Player:Agent {
 		private static Random rand;
 		private static bool player_exists;
+		private List<Agent> kills;
 
 		static Player() {
 			rand = new Random();
@@ -139,6 +140,7 @@ namespace GenericRoguelike.Models
 			}
 			player_exists = true;
 			this.attack_strength = 10;
+			this.kills = new List<Agent>();
 		}
 
 		public override void TakeAction(string message,HandlerResult result) {
@@ -180,6 +182,9 @@ namespace GenericRoguelike.Models
 				int counter_damage = (int)((double)((Agent)target).attack_strength * rand.NextDouble ());
 				this.takeDamage (counter_damage);
 			}
+			if ((target is Agent) && !target.isAlive ()) {
+				this.kills.Add ((Agent)target);
+			}
 		}
 		public override string ToString ()
 		{
@@ -187,6 +192,9 @@ namespace GenericRoguelike.Models
 		}
 		public override char Char() {
 			return 'p';
+		}
+		public List<Agent> Kills() {
+			return this.kills;
 		}
 	}
 	public class Mouse:Agent
