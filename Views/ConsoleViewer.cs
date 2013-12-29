@@ -58,8 +58,9 @@ namespace GenericRoguelike.Views
 		/// </summary>
 		/// <param name="x">The x coordinate.</param>
 		/// <param name="y">The y coordinate.</param>
-		public void Update(int x, int y, int turn_counter) {
+		public void Update(int x, int y, int turn_counter, string turn_message) {
 			this.ClearBuffer ();
+
 			if (!this._world.HasLocation (new Location (x, y))) {
 				throw new ArgumentOutOfRangeException ("(x,y)", "Cannot draw a location outside of the world!");
 			}
@@ -83,9 +84,9 @@ namespace GenericRoguelike.Views
 				}
 			}
 			// draw messages:
-			int _i = this._width / 2 - 10;
+			int _i = 0;
 			int _j = this._height - 1;
-			string msg = "Press ESC to quit...";
+			string msg = turn_message.Substring (0, System.Math.Min(turn_message.Length,this._width - 10)) + " Press ESC to quit...";
 			for (int k=0; k < msg.Length; k++) {
 				this.DrawChar(msg[k],_i++,_j);
 			}
@@ -112,11 +113,35 @@ namespace GenericRoguelike.Views
 			Console.Write (sb.ToString());
 		}
 
+		public void Splash (World game_world)
+		{
+			Console.Clear ();
+			Console.Write (
+				@"
+
+**************************************************************
+*            Welcome to Generic Roguelike!                   *
+*               An (In)complete Ripoff                       *
+*                  by Michael Brown                          *
+**************************************************************
+
+"
+			);
+			Console.WriteLine ("The name of the world is {0}.", game_world.Name ());
+			Console.WriteLine ("It has a width of {0} and height of {1}.", game_world.Width (), game_world.Height ());
+			Console.WriteLine ("Hello " + game_world.Name () + "!");
+			Console.WriteLine ("\nYou are marked by the letter p. Move and attack with W A S D. Quit with ESC.");
+			Console.WriteLine ("Press enter to continue...");
+			Console.ReadLine ();
+		}
+
 		public void DeathScreen (Player player, int turns)
 		{
 			Console.Clear ();
 			Console.WriteLine ("You died on turn {0}!", turns);
 			Console.WriteLine ("Stats: "+player);
+			Console.WriteLine ("Press enter to continue...");
+			Console.ReadLine ();
 		}
 
 		private void ClearBuffer ()

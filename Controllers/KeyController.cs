@@ -25,6 +25,20 @@ using GenericRoguelike.Views;
 
 namespace GenericRoguelike.Controllers
 {
+	public class HandlerResult
+	{
+		private System.Text.StringBuilder sb;
+		public HandlerResult() {
+			this.sb = new System.Text.StringBuilder ();
+		}
+		public void AddResult(string s) {
+			this.sb.Append(s);
+		}
+		public override string ToString ()
+		{
+			return this.sb.ToString();
+		}
+	}
 	public class KeyController
 	{
 		public const ConsoleKey KEY_MOVE_UP = ConsoleKey.W;
@@ -33,7 +47,7 @@ namespace GenericRoguelike.Controllers
 		public const ConsoleKey KEY_MOVE_RIGHT = ConsoleKey.D;
 		public const ConsoleKey KEY_QUIT = ConsoleKey.Escape;
 
-		public delegate void Handler(string message);
+		public delegate void Handler(string message, HandlerResult result);
 
 		private Dictionary<ConsoleKey, Handler> _handlers;
 
@@ -51,12 +65,15 @@ namespace GenericRoguelike.Controllers
 			}
 		}
 
-		public void RunOnce()
+		public string RunOnce()
 		{
 			ConsoleKeyInfo cki = Console.ReadKey (false);
+			HandlerResult result = new HandlerResult ();
+
 			if (this._handlers.ContainsKey(cki.Key)) {
-				this._handlers [cki.Key] (KeyToString(cki.Key));
+				this._handlers [cki.Key] (KeyToString(cki.Key),result);
 			}
+			return result.ToString ();
 		}
 
 		private string KeyToString(ConsoleKey k) {

@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using GenericRoguelike.Controllers;
 
 namespace GenericRoguelike.Models
 {
@@ -117,7 +118,7 @@ namespace GenericRoguelike.Models
 
 	public abstract class Agent:Destructible {
 		public int attack_strength { get; set; }
-		public abstract void TakeAction(string message);
+		public abstract void TakeAction(string message, HandlerResult result);
 
 		public Agent(World w, Location l):base(w,l) {
 
@@ -140,7 +141,7 @@ namespace GenericRoguelike.Models
 			this.attack_strength = 10;
 		}
 
-		public override void TakeAction(string message) {
+		public override void TakeAction(string message,HandlerResult result) {
 			if (message.StartsWith("MOVE_")) {
 				Location loc = this.Location();
 				switch (message) {
@@ -163,7 +164,7 @@ namespace GenericRoguelike.Models
 						LocalObject target = objs_at_dest [0];
 						if ((target is Destructible) && ((Destructible)target).isAlive()) {
 							this.Attack ((Destructible)target);
-							Console.Write ("Attack!");
+							result.AddResult ("Attacking " + target.ToString ());
 						}
 					} else {
 						this.Move(loc);
@@ -198,7 +199,7 @@ namespace GenericRoguelike.Models
 			this.health = 10;
 			this.attack_strength = 2;
 		}
-		public override void TakeAction (string message)
+		public override void TakeAction (string message, HandlerResult result)
 		{
 			if (!this.isAlive ()) {
 				return;

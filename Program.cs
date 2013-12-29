@@ -31,6 +31,8 @@ namespace GenericRoguelike
 	{
 		private static bool quitting;
 
+
+
 		public static void Main (string[] args)
 		{
 			int turns = 0;
@@ -39,9 +41,7 @@ namespace GenericRoguelike
 			ConsoleViewer view = new ConsoleViewer (game_world);
 			KeyController controller = new KeyController ();
 
-			Console.WriteLine ("The name of the world is " + game_world.Name());
-			Console.WriteLine ("It has a width of {0} and height of {1}", game_world.Width (), game_world.Height ());
-			Console.WriteLine ("Hello "+game_world.Name()+"!");
+			view.Splash (game_world);
 
 			Player player = new Player (game_world, new Location (0, 0));
 			game_world.RegisterLocalObject("player",player);
@@ -72,27 +72,26 @@ namespace GenericRoguelike
 				controller.RegisterCallback (KeyController.KEY_MOVE_RIGHT, mouse_action);
 			}
 
-			Console.WriteLine ("Press enter to continue...");
-			Console.ReadLine ();
+
 
 			quitting = false;
+			string turn_message = "";
 			while (!quitting) {
 				++turns;
-				view.Update (System.Math.Max(0,player.Location().x-10),System.Math.Max(0,player.Location().y-10),turns);
-				controller.RunOnce ();
+				view.Update (System.Math.Max(0,player.Location().x-10),System.Math.Max(0,player.Location().y-10),turns,turn_message);
+				turn_message = controller.RunOnce ();
 				if (!player.isAlive ()) {
 					view.DeathScreen (player,turns);
-					Console.WriteLine ("Press enter to continue...");
-					Console.ReadLine ();
 					break;
 				}
 			}
 
 		}
 
-		public static void Quit (string message)
+		public static void Quit (string message, HandlerResult result)
 		{
 			quitting = true;
+			result.AddResult ("quitting");
 		}
 	}
 }
