@@ -158,6 +158,23 @@ namespace GenericRoguelike
 			}
 		}
 
+		[Test ()]
+		public void TestWorldDeregisterLocalObject()
+		{
+			World w = new World();
+			LocalObject obj = new LocalObject(w, new Location());
+
+			w.RegisterLocalObject("new thingy", obj);
+			Assert.IsTrue (obj.IsRegistered ());
+			Assert.IsTrue (w.HasLocalObject ("new thingy"));
+			w.DeregisterLocalObject ("new thingy");
+			Assert.IsFalse (obj.IsRegistered ());
+			Assert.IsFalse (w.HasLocalObject ("new thingy"));
+			w.RegisterLocalObject ("second time going", obj);
+			Assert.IsTrue (obj.IsRegistered ());
+			Assert.IsTrue (w.HasLocalObject ("second time going"));
+		}
+
 	}
 }
 

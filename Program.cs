@@ -52,7 +52,7 @@ namespace GenericRoguelike
 			controller.RegisterCallback (KeyController.KEY_MOVE_LEFT, player_action_handler);
 			controller.RegisterCallback (KeyController.KEY_MOVE_RIGHT, player_action_handler);
 			controller.RegisterCallback (KeyController.KEY_QUIT, quit_handler);
-			// create 5 mice & 2 big mice:
+			// create 5 mice, 2 big mice & 5 medkits:
 			for (int i = 0; i < 5; i++) {
 				Mouse m = new Mouse (game_world, new Location (rand.Next (60), rand.Next (20)));
 				game_world.RegisterLocalObject ("mouse" + i, m);
@@ -71,8 +71,10 @@ namespace GenericRoguelike
 				controller.RegisterCallback (KeyController.KEY_MOVE_LEFT, mouse_action);
 				controller.RegisterCallback (KeyController.KEY_MOVE_RIGHT, mouse_action);
 			}
-
-
+			for (int i = 0; i < 5; i++) {
+				MedKit mk = new MedKit (game_world, new Location (rand.Next (60), rand.Next (20)));
+				game_world.RegisterLocalObject ("mk"+i, mk);
+			}
 
 			quitting = false;
 			string turn_message = "";

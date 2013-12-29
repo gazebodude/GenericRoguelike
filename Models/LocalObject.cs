@@ -78,6 +78,12 @@ namespace GenericRoguelike.Models
 				this.key = k;
 			}
 		}
+		public void Deregister()
+		{
+			if (this.is_registered) {
+				this.is_registered = false;
+			}
+		}
 		public string Key ()
 		{
 			return key;
@@ -115,7 +121,10 @@ namespace GenericRoguelike.Models
 			}
 		}
 	}
-
+	public abstract class Pickup:LocalObject {
+		public Pickup(World w, Location l):base(w, l){}
+		public abstract void ActivatePickup();
+	}
 	public abstract class Agent:Destructible {
 		public int attack_strength { get; set; }
 		public abstract void TakeAction(string message, HandlerResult result);
@@ -167,6 +176,9 @@ namespace GenericRoguelike.Models
 						if ((target is Destructible) && ((Destructible)target).isAlive()) {
 							this.Attack ((Destructible)target);
 							result.AddResult ("Attacking " + target.ToString ());
+						}
+						if (target is Pickup) {
+							((Pickup)target).ActivatePickup ();
 						}
 					} else {
 						this.Move(loc);
@@ -251,7 +263,7 @@ namespace GenericRoguelike.Models
 	public class BigMouse:Mouse
 	{
 		public BigMouse(World w, Location l):base(w,l) {
-			this.health = 80;
+			this.health = 60;
 			this.attack_strength = 15;
 		}
 		public override char Char ()
@@ -261,6 +273,25 @@ namespace GenericRoguelike.Models
 		public override string ToString ()
 		{
 			return string.Format ("[BigMouse] Health: {0} Location: {1}", this.health, this.Location());
+		}
+	}
+	public class MedKit:Pickup
+	{
+		public const int HEALTH_BOOST = 25;
+		public MedKit(World w, Location l):base(w,l) {}
+		public override void ActivatePickup ()
+		{
+			try {
+				Player player = (Player)this.World().GetLocalObject("player");
+				player.takeDamage(-HEALTH_BOOST);
+				this.World().DeregisterLocalObject(this.Key());
+			} catch (ArgumentException e) {
+				// pass
+			}
+		}
+		public override char Char ()
+		{
+			return 'H';
 		}
 	}
 }

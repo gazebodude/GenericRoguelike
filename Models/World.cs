@@ -202,7 +202,13 @@ namespace GenericRoguelike.Models
 			}
 			return objects;
 		}
-		
+		public bool DeregisterLocalObject(string key) {
+			if (!HasLocalObject (key)) {
+				throw new ArgumentException("World does not have a LocalObject with the given key!", "string key");
+			}
+			_game_objects [key].Deregister ();
+			return _game_objects.Remove (key);
+		}
 		/// <summary>
 		/// Generate a new random world name chosen randomly from the list Models.WorldNames
 		/// </summary>
