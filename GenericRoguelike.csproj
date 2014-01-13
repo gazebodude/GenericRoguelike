@@ -67,6 +67,10 @@
     <None Include=".gitignore">
       <DependentUpon>README.md</DependentUpon>
     </None>
+    <None Include="TestResult.xml">
+      <Visible>False</Visible>
+    </None>
+    <None Include="TODO.txt" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

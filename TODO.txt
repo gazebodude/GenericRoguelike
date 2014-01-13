@@ -1,0 +1,23 @@
+Features
+--------
+* Inventory
+* Map support
+  * Procedural generation
+  * Walls, doors etc...
+* Continuous monster and item spawning
+* Levelling
+* Goal(s)
+  * Defeat a final boss?
+  * Get an item?
+  * Attain a level?
+  * Points?
+
+Monsters
+--------
+
+Items
+-----
+* Weapons
+* Armour
+* Scrolls
+* Keys...
